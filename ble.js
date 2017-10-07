@@ -1,15 +1,40 @@
+require('date-utils');
+function datetimeStr() {
+  var now = new Date();
+  return now.toFormat('YYYYMMDDHH24MISS');
+}
+
+
+var fs = require("fs");
+function write(fname, data) {
+  try {
+    var fd = fs.openSync(fname, "a");
+    fs.writeSync(fd, data);
+    fs.closeSync(fd);
+  } catch (e) {
+    console.log(e);
+  }
+}
+function read(fname) {
+  try {
+    return fs.readFileSync(fname);
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+
 var SensorTag = require('sensortag');
 
 console.info("waiting for connect");
-
-var obj_temp = {};
-var temp = {};
-var taccel_x = {};
-var taccel_y = {};
-var taccel_z = {};
-var hum = {};
-var baro = {};
-var lux = {};
+global.obj_temp = {};
+global.temp = {};
+global.accel_x = {};
+global.accel_y = {};
+global.accel_z = {};
+global.hum = {};
+global.baro = {};
+global.lux = {};
 
 function ti_ir_temperature(conned_obj, period) {
   conned_obj.enableIrTemperature(function() {
@@ -18,10 +43,10 @@ function ti_ir_temperature(conned_obj, period) {
         //console.info("ready: notifyIrTemperature");
         //console.info("notify period = " + period + "ms");
         conned_obj.on('irTemperatureChange', function(objectTemperature, ambientTemperature) {
-          console.log(conned_obj.id, '\tobject temperature = %d °C', objectTemperature.toFixed(1));
-          console.log(conned_obj.id,'\tambient temperature = %d °C', ambientTemperature.toFixed(1));
-          obj_temp[conned_obj.id] = objectTemperature.toFixed(1);
-          temp[conned_obj.id] = ambientTemperature.toFixed(1);
+          //console.log(conned_obj.id, '\tobject temperature = %d °C', objectTemperature.toFixed(1));
+          //console.log(conned_obj.id,'\tambient temperature = %d °C', ambientTemperature.toFixed(1));
+          global.obj_temp[conned_obj.id] = objectTemperature.toFixed(1);
+          global.temp[conned_obj.id] = ambientTemperature.toFixed(1);
         });
       });
     });
@@ -35,10 +60,10 @@ function ti_accelerometer(conned_obj, period) {
         //console.info("ready: notifyAccelerometer");
         //console.info("notify period = " + period + "ms");
         conned_obj.on('accelerometerChange', function(x, y, z) {
-          console.log(conned_obj.id, '\taccel_x = %d G', x.toFixed(1), 'accel_y = %d G', y.toFixed(1), 'accel_z = %d G', z.toFixed(1));
-          taccel_x[conned_obj.id] = x.toFixed(1);
-          taccel_y[conned_obj.id] = y.toFixed(1);
-          taccel_z[conned_obj.id] = z.toFixed(1);
+          //console.log(conned_obj.id, '\taccel_x = %d G', x.toFixed(1), 'accel_y = %d G', y.toFixed(1), 'accel_z = %d G', z.toFixed(1));
+          global.accel_x[conned_obj.id] = x.toFixed(1);
+          global.accel_y[conned_obj.id] = y.toFixed(1);
+          global.accel_z[conned_obj.id] = z.toFixed(1);
         });
       });
     });
@@ -52,10 +77,10 @@ function ti_humidity(conned_obj, period) {
         //console.info("ready: notifyHumidity");
         //console.info("notify period = " + period + "ms");
         conned_obj.on('humidityChange', function(temperature, humidity) {
-          console.log(conned_obj.id, '\ttemperature = %d °C', temperature.toFixed(1));
-          console.log(conned_obj.id, '\thumidity = %d %', humidity.toFixed(1));
-          temp[conned_obj.id] = temperature.toFixed(1);
-          hum[conned_obj.id] = humidity.toFixed(1);
+          //console.log(conned_obj.id, '\ttemperature = %d °C', temperature.toFixed(1));
+          //console.log(conned_obj.id, '\thumidity = %d %', humidity.toFixed(1));
+          global.temp[conned_obj.id] = temperature.toFixed(1);
+          global.hum[conned_obj.id] = humidity.toFixed(1);
         });
       });
     });
@@ -69,8 +94,8 @@ function ti_barometric_pressure(conned_obj, period) {
         //console.info("ready: notifyBarometricPressure");
         //console.info("notify period = " + period + "ms");
         conned_obj.on('barometricPressureChange', function(pressure) {
-          console.log(conned_obj.id, '\tpressure = %d mBar', pressure.toFixed(1));
-          baro[conned_obj.id] = pressure.toFixed(1);
+          //console.log(conned_obj.id, '\tpressure = %d mBar', pressure.toFixed(1));
+          global.baro[conned_obj.id] = pressure.toFixed(1);
         });
       });
     });
@@ -84,8 +109,8 @@ function ti_luxometer(conned_obj, period) {
         //console.info("ready: notifyLuxometer");
         //console.info("notify period = " + period + "ms");
         conned_obj.on('luxometerChange', function(lux) {
-          console.log(conned_obj.id, '\tlux = %d', lux.toFixed(1));
-          lux[conned_obj.id] = lux.toFixed(1);
+          //console.log(conned_obj.id, '\tlux = %d', lux.toFixed(1));
+          global.lux[conned_obj.id] = lux.toFixed(1);
         });
       });
     });
@@ -141,4 +166,15 @@ var onDiscover2 = function(sensorTag) {
 };
 
 SensorTag.discover(onDiscover1);
+
+
+function loop() {
+  console.log("loop");
+  for (key in global.lux) {
+    console.log(key + '\t' + datetimeStr() + '\t' + global.obj_temp[key] + '\t' + global.temp[key] + '\t' + global.accel_x[key] + '\t' + global.accel_y[key] + '\t' + global.accel_z[key] + '\t' + global.hum[key] + '\t' + global.baro[key] + '\t' + global.lux[key] );
+    write(key + '.csv', datetimeStr() + '\t' + global.obj_temp[key] + '\t' + global.temp[key] + '\t' + global.accel_x[key] + '\t' + global.accel_y[key] + '\t' + global.accel_z[key] + '\t' + global.hum[key] + '\t' + global.baro[key] + '\t' + global.lux[key] );
+  }
+  setTimeout(loop, 10000);
+}
+setTimeout(loop, 10000);
 

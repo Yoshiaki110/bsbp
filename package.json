@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/Yoshiaki110/bsbp#readme",
   "dependencies": {
+    "date-utils": "^1.2.21",
     "sensortag": "^1.3.0"
   }
 }
