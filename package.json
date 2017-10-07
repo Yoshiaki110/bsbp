@@ -1,0 +1,22 @@
+{
+  "name": "bsbp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "ble.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Yoshiaki110/bsbp.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Yoshiaki110/bsbp/issues"
+  },
+  "homepage": "https://github.com/Yoshiaki110/bsbp#readme",
+  "dependencies": {
+    "sensortag": "^1.3.0"
+  }
+}
