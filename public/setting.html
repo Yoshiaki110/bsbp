@@ -1,0 +1,59 @@
+<html>
+  <head>
+    <title>設定画面</title>
+  </head>
+  <script type="text/javascript">
+    function Get() {
+      var req = new XMLHttpRequest();
+      req.open('GET', '/api/setting', true);
+      req.send(null);
+      req.onreadystatechange = function() {
+        if (req.readyState == 4) { // 通信の完了時
+          if (req.status == 200) { // 通信の成功時
+            var obj = JSON.parse(req.responseText);
+            console.log(obj);
+            console.log(obj.sex);
+            console.log(obj.interval);
+            frm.sex.value = obj.sex;
+            frm.age.value = obj.age;
+            frm.interval.value = obj.interval;
+          }
+//        } else {
+//          frm.result.value = "通信中..."
+        }
+      }
+    }
+    function Post() {
+      var req = new XMLHttpRequest();
+      req.open('POST', '/api/setting', true);
+      req.setRequestHeader( 'Content-Type', 'application/json');
+      var data = { sex: frm.sex.value, interval: parseInt(frm.interval.value), age: parseInt(frm.age.value) };
+      req.send(JSON.stringify(data));
+      req.onreadystatechange = function() {
+        if (req.readyState == 4) { // 通信の完了時
+          if (req.status == 200) { // 通信の成功時
+//            frm.result.value = req.responseText;
+          }
+//        } else {
+//          frm.result.value = "通信中..."
+        }
+      }
+    }
+    function Home() {
+      location.href = '/';
+    }
+    window.onload = Get;
+
+  </script>
+  <body>
+    設定画面
+    <form name="frm">
+      性別<input type="text" name="sex" size="15" value=0><br>
+      間隔<input type="text" name="interval" size="15" value=0><br>
+      年齢<input type="text" name="age" size="15" value=0><br>
+      <INPUT type="button" name="button1" onClick="Home()" value="戻る">
+      <INPUT type="button" name="button2" onClick="Post()" value="設定">
+    </form>
+  </body>
+</html>
+

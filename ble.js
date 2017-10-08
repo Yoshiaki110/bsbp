@@ -178,3 +178,40 @@ function loop() {
 }
 setTimeout(loop, 10000);
 
+
+var express = require('express');
+var bodyParser = require('body-parser');
+
+var app = express();
+
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use('/', express.static('public'));
+
+app.get('/api/setting', function(req, res) {
+  var d = JSON.parse(fs.readFileSync('setting.json', 'utf8'));
+  console.log('d', d);
+  console.log('d.sex', d.sex);
+  console.log('d.interval', d.interval);
+  res.json(d);
+});
+app.post('/api/setting', function(req, res) {
+  console.log('req.body', req.body);
+  var str = JSON.stringify(req.body, null, '  ');
+  console.log('str', str);
+  fs.writeFileSync('setting.json', str);
+  res.json(req.body);
+});
+/*
+app.get('/', function(req, res) {
+  console.log(req);
+  var d = { hum: 12.3, lux: 67.8 };
+  res.json(JSON.stringify(d));
+});
+app.post('/', function(req, res) {
+  console.log(req.body);
+  var d = { hum: 12.3, lux: 67.8 };
+  res.json(JSON.stringify(d));
+});
+*/
+app.listen(80);
