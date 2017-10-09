@@ -202,6 +202,28 @@ app.post('/api/setting', function(req, res) {
   fs.writeFileSync('setting.json', str);
   res.json(req.body);
 });
+
+app.get('/api/realtime', function(req, res) {
+  var d = [];
+  for (key in global.lux) {
+    var e = {
+      id: key,
+      obj_temp: global.obj_temp[key],
+      temp: global.temp[key],
+      accel_x: global.accel_x[key],
+      accel_y: global.accel_y[key],
+      accel_z: global.accel_z[key],
+      hum: global.hum[key],
+      baro: global.baro[key],
+      lux: global.lux[key]
+    }
+    d.push(e);
+  }
+
+//  var d = JSON.parse(fs.readFileSync('setting.json', 'utf8'));
+  console.log('d', d);
+  res.json(d);
+});
 /*
 app.get('/', function(req, res) {
   console.log(req);

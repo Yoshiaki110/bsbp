@@ -14,22 +14,27 @@
           if (req.status == 200) { // 通信の成功時
             var obj = JSON.parse(req.responseText);
             console.log(obj);
-            frm1.obj_temp.value = obj.s1.obj_temp;
-            frm1.temp.value = obj.s1.temp;
-            frm1.accel_x.value = obj.s1.accel_x;
-            frm1.accel_y.value = obj.s1.accel_y;
-            frm1.accel_z.value = obj.s1.accel_z;
-            frm1.hum.value = obj.s1.hum;
-            frm1.baro.value = obj.s1.baro;
-            frm1.lux.value = obj.s1.lux;
-            frm2.obj_temp.value = obj.s2.obj_temp;
-            frm2.temp.value = obj.s2.temp;
-            frm2.accel_x.value = obj.s2.accel_x;
-            frm2.accel_y.value = obj.s2.accel_y;
-            frm2.accel_z.value = obj.s2.accel_z;
-            frm2.hum.value = obj.s2.hum;
-            frm2.baro.value = obj.s2.baro;
-            frm2.lux.value = obj.s2.lux;
+            console.log(obj.length);
+            if (obj.length >= 1) {
+              frm1.obj_temp.value = obj[0].obj_temp;
+              frm1.temp.value = obj[0].temp;
+              frm1.accel_x.value = obj[0].accel_x;
+              frm1.accel_y.value = obj[0].accel_y;
+              frm1.accel_z.value = obj[0].accel_z;
+              frm1.hum.value = obj[0].hum;
+              frm1.baro.value = obj[0].baro;
+              frm1.lux.value = obj[0].lux;
+            }
+            if (obj.length >= 2) {
+              frm2.obj_temp.value = obj[1].obj_temp;
+              frm2.temp.value = obj[1].temp;
+              frm2.accel_x.value = obj[1].accel_x;
+              frm2.accel_y.value = obj[1].accel_y;
+              frm2.accel_z.value = obj[1].accel_z;
+              frm2.hum.value = obj[1].hum;
+              frm2.baro.value = obj[1].baro;
+              frm2.lux.value = obj[1].lux;
+            }
           }
 //        } else {
 //          frm.result.value = "通信中..."
@@ -43,6 +48,12 @@
     function Setting() {
       location.href = '/setting.html';
     }
+    function loop() {
+      Get();
+      setTimeout(loop, 2000);
+    }
+    window.onload = loop;
+
   </script>
   <body>
     ■メイン画面■<BR>
