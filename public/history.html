@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<head>
+<title>履歴画面</title>
+<script>
+/**
+ * 行追加
+ */
+function insertRow(id) {
+    // テーブル取得
+    var table = document.getElementById('table');
+    // 行を行末に追加
+    var row = table.insertRow(-1);
+    // セルの挿入
+    var cell1 = row.insertCell(-1);
+    var cell2 = row.insertCell(-1);
+    var cell3 = row.insertCell(-1);
+    var cell4 = row.insertCell(-1);
+    var cell5 = row.insertCell(-1);
+    var cell6 = row.insertCell(-1);
+    var cell7 = row.insertCell(-1);
+    var cell8 = row.insertCell(-1);
+ 
+    // 行数取得
+    var row_len = table.rows.length;
+ 
+    // セルの内容入力
+    cell1.innerHTML = row_len + "-" + 0;
+    cell2.innerHTML = row_len + "-" + 1;
+    cell3.innerHTML = row_len + "-" + 2;
+    cell4.innerHTML = row_len + "-" + 3;
+    cell5.innerHTML = row_len + "-" + 0;
+    cell6.innerHTML = row_len + "-" + 1;
+    cell7.innerHTML = row_len + "-" + 2;
+    cell8.innerHTML = row_len + "-" + 3;
+}
+function deleteRow(id) {
+    // テーブル取得
+    var table = document.getElementById('table');
+    for (; table.rows.length > 1; ) {
+        table.deleteRow(1);
+    }
+}
+
+function Home() {
+  location.href = '/';
+}
+
+//<input type="button" value="行追加" onclick="insertRow('table')" />
+//<input type="button" value="全行削除" onclick="deleteRow('table')" />
+
+
+</script>
+
+</head>
+<body>
+■履歴画面■
+<table id="table" border="1">
+  <tr bgcolor="#f1f1f1"><th>日付</th><th>室温</th><th>湿度</th><th>照度</th><th>気圧</th><th>体温</th><th>寝返回数</th><th>点数</th></tr>
+
+  <tr><td>10/02</td><td>21.5</td><td>71</td><td>92.0</td><td>1004</td><td>35.9</td><td>3</td><td>5</td></tr>
+  <tr bgcolor="#80FF00"><td>10/03</td><td>20.3</td><td>53</td><td>75.0</td><td>1012</td><td>35.7</td><td>1</td><td>9</td></tr>
+  <tr><td>10/04</td><td>22.6</td><td>46</td><td>86.0</td><td>1000</td><td>35.8</td><td>4</td><td>7</td></tr>
+  <tr><td>10/05</td><td>23.7</td><td>78</td><td>78.0</td><td>1004</td><td>35.6</td><td>2</td><td>5</td></tr>
+  <tr><td>10/06</td><td>23.5</td><td>52</td><td>75.0</td><td>1012</td><td>35.7</td><td>3</td><td>6</td></tr>
+  <tr><td>10/07</td><td>24.8</td><td>45</td><td>87.0</td><td>1008</td><td>35.8</td><td>2</td><td>4</td></tr>
+  <tr bgcolor="#FA58D0"><td>10/08</td><td>26.9</td><td>66</td><td>54.0</td><td>1012</td><td>35.6</td><td>2</td><td>2</td></tr>
+  <tr bgcolor="#80FF00"><td>10/09</td><td>22.1</td><td>57</td><td>67.0</td><td>1000</td><td>35.8</td><td>0</td><td>9</td></tr>
+  <tr><td>10/10</td><td>23.2</td><td>52</td><td>73.0</td><td>1004</td><td>35.6</td><td>1</td><td>8</td></tr>
+  <tr><td>10/11</td><td>21.5</td><td>51</td><td>70.0</td><td>1008</td><td>35.5</td><td>1</td><td>8</td></tr>
+</table>
+<INPUT type="button" name="button1" onClick="Home()" value="戻る">
+</body>
+</html>
+
