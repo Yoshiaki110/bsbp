@@ -50,9 +50,14 @@
   <body>
     ■設定画面■
     <form name="frm">
-      性別<input type="text" name="sex" size="15"><br>
-      間隔<input type="text" name="interval" size="15"><br>
+      性別<select name="sex">
+        <option value="mare">男性
+        <option value="female">女性
+      <br>
       年齢<input type="text" name="age" size="15"><br>
+      環境センサID<input type="text" name="envsid" size="17"><br>
+      体センサID<input type="text" name="bodysid" size="17"><br>
+      センサ受信間隔<input type="text" name="interval" size="15"><br>
       <INPUT type="button" name="button1" onClick="Home()" value="戻る">
       <INPUT type="button" name="button2" onClick="Post()" value="設定">
     </form>

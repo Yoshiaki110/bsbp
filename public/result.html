@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <head>
+    <title>結果入力画面</title>
+  </head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
+  <script type="text/javascript">
+    // ここにChart.jsの処理を記述
+  var lineChartData = {
+    labels : ["1月","2月","3月","4月","5月","6月"],
+    datasets : [
+      {
+        label: "私",
+        fillColor : /*"#f2dae8"*/"rgba(242,218,232,0.6)",
+        strokeColor : /*"#dd9cb4"*/"rgba(221,156,180,0.6)",
+        pointColor : /*"#dd9cb4"*/"rgba(221,156,180,0.6)",
+        pointStrokeColor : "#fff",
+        pointHighlightFill : "#fff",
+        pointHighlightStroke : /*"#dd9cb4"*/"rgba(221,156,180,0.6)",
+        data : [67,65,66,70,71,77]
+      },
+      {
+        label: "彼",
+        fillColor : /*"#afd0ef"*/"rgba(175,208,239,0.6)",
+        strokeColor : /*"#fb7dd8"*/"rgba(143,183,221,0.6)",
+        pointColor : /*"#8fb7dd"*/"rgba(143,183,221,0.6)",
+        pointStrokeColor : "#fff",
+        pointHighlightFill : "#fff",
+        pointHighlightStroke : /*"#8fb7dd"*/"rgba(143,183,221,0.6)",
+        data : [57,56,55,53,56,49]
+      }
+    ]
+  }
+  var radarChartData = {
+    labels: ["HP", "MP", "知力", "腹筋力", "食事力", "魔力", "ハンドボール投げ"],
+    datasets: [
+      {
+        label: "私",
+        fillColor : /*"#f2dae8"*/"rgba(242,218,232,0.6)",
+        strokeColor : /*"#dd9cb4"*/"rgba(221,156,180,0.6)",
+        pointColor : /*"#dd9cb4"*/"rgba(221,156,180,0.6)",
+        pointStrokeColor : "#fff",
+        pointHighlightFill : "#fff",
+        pointHighlightStroke : /*"#dd9cb4"*/"rgba(221,156,180,0.6)",
+        data : [100,32,80,95,80,10,50]
+      },
+      {
+        label: "彼",
+        fillColor : /*"#afd0ef"*/"rgba(175,208,239,0.6)",
+        strokeColor : /*"#8fb7dd"*/"rgba(143,183,221,0.6)",
+        pointColor : /*"#8fb7dd"*/"rgba(143,183,221,0.6)",
+        pointStrokeColor : "#fff",
+        pointHighlightFill : "#fff",
+        pointHighlightStroke : /*"#8fb7dd"*/"rgba(143,183,221,0.6)",
+        data : [35,62,42,40,37,67,70]
+      }
+    ]
+  };
+  window.onload = function(){
+    var ctx = document.getElementById("linechart").getContext("2d");
+    window.myLine = new Chart(ctx).Line(lineChartData, {
+      responsive: true
+      // 下記を追加すると線がまっすぐになります
+      /* bezierCurve: false */
+    });
+    window.myRadar = new Chart(document.getElementById("radarchart").getContext("2d")).Radar(radarChartData, {
+      responsive: true
+    });
+  }
+    function Home() {
+      location.href = '/';
+    }
+  </script>
+  <body>
+    <div style="width: 50%">
+      <canvas id="linechart" height="450" width="600"></canvas>
+      <canvas id="radarchart" height="450" width="600"></canvas>
+    </div>
+    <form name="frm">
+      日付<select name="year">
+        <option value="2017">2017
+        <option value="2018">2018
+        <option value="2019">2019
+        <option value="2020">2020
+      </select>年
+      <select name="month">
+        <option value="1">1
+        <option value="2">2
+        <option value="3">3
+        <option value="4">4
+        <option value="5">5
+        <option value="6">6
+        <option value="7">7
+        <option value="8">8
+        <option value="9">9
+        <option value="10">10
+        <option value="11">11
+        <option value="12">12
+      </select>月
+      <select name="day">
+        <option value="1">1
+        <option value="2">2
+        <option value="3">3
+        <option value="4">4
+        <option value="5">5
+        <option value="6">6
+        <option value="7">7
+        <option value="8">8
+        <option value="9">9
+        <option value="10">10
+        <option value="11">11
+        <option value="12">12
+        <option value="13">13
+        <option value="14">14
+        <option value="15">15
+        <option value="16">16
+        <option value="17">17
+        <option value="18">18
+        <option value="19">19
+        <option value="20">20
+        <option value="21">21
+        <option value="22">22
+        <option value="23">23
+        <option value="24">24
+        <option value="25">25
+        <option value="26">26
+        <option value="27">27
+        <option value="28">28
+        <option value="29">29
+        <option value="30">30
+        <option value="31">31
+      </select>日<br>
+      点数<select name="score">
+        <option value="1">1
+        <option value="2">2
+        <option value="3">3
+        <option value="4">4
+        <option value="5">5
+        <option value="6" selected>6
+        <option value="7">7
+        <option value="8">8
+        <option value="9">9
+        <option value="10">10
+      </select><br>
+      メモ<input type="text" name="memo" size="15"><br>
+      <INPUT type="button" name="button1" onClick="Home()" value="戻る">
+      <INPUT type="button" name="button2" onClick="Post()" value="設定">
+    </form>
+  </body>
+</html>
