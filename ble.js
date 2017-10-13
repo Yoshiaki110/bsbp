@@ -1,3 +1,11 @@
+var gpio = require('./gpio.js');
+gpio.mode(8, 'out');
+gpio.mode(9, 'out');
+gpio.mode(10, 'out');
+gpio.write(8, 0);   // red
+gpio.write(9, 0);   // green
+gpio.write(10, 0);  // orange
+
 require('date-utils');
 function datetimeStr() {
   var now = new Date();
@@ -122,6 +130,7 @@ var onDiscover1 = function(sensorTag) {
   sensorTag.connectAndSetup(function() {
     console.info("connect 1", sensorTag.id);
     sensor1 = true;
+    gpio.write(9, 1);
     if (!sensor2) {
       SensorTag.discover(onDiscover2);
     }
@@ -137,6 +146,7 @@ var onDiscover1 = function(sensorTag) {
   sensorTag.on("disconnect", function() {
     console.info("disconnect", sensorTag.id);
     sensor1 = false;
+    gpio.write(9, 0);
     SensorTag.discover(onDiscover1);
   });
 };
@@ -146,6 +156,7 @@ var onDiscover2 = function(sensorTag) {
   sensorTag.connectAndSetup(function() {
     console.info("connect 1", sensorTag.id);
     sensor2 = true;
+    gpio.write(10, 1);
     if (!sensor1) {
       SensorTag.discover(onDiscover1);
     }
@@ -161,6 +172,7 @@ var onDiscover2 = function(sensorTag) {
   sensorTag.on("disconnect", function() {
     console.info("disconnect", sensorTag.id);
     sensor2 = false;
+    gpio.write(10, 0);
     SensorTag.discover(onDiscover2);
   });
 };
@@ -172,11 +184,11 @@ function loop() {
   console.log("loop");
   for (key in global.lux) {
     console.log(key + '\t' + datetimeStr() + '\t' + global.obj_temp[key] + '\t' + global.temp[key] + '\t' + global.accel_x[key] + '\t' + global.accel_y[key] + '\t' + global.accel_z[key] + '\t' + global.hum[key] + '\t' + global.baro[key] + '\t' + global.lux[key] );
-    write(key + '.csv', datetimeStr() + '\t' + global.obj_temp[key] + '\t' + global.temp[key] + '\t' + global.accel_x[key] + '\t' + global.accel_y[key] + '\t' + global.accel_z[key] + '\t' + global.hum[key] + '\t' + global.baro[key] + '\t' + global.lux[key] );
+    write(key + '.csv', datetimeStr() + '\t' + global.obj_temp[key] + '\t' + global.temp[key] + '\t' + global.accel_x[key] + '\t' + global.accel_y[key] + '\t' + global.accel_z[key] + '\t' + global.hum[key] + '\t' + global.baro[key] + '\t' + global.lux[key] + '\n');
   }
-  setTimeout(loop, 10000);
+  setTimeout(loop, 60000);
 }
-setTimeout(loop, 10000);
+setTimeout(loop, 5000);
 
 
 var express = require('express');
@@ -190,15 +202,13 @@ app.use('/', express.static('public'));
 
 app.get('/api/setting', function(req, res) {
   var d = JSON.parse(fs.readFileSync('setting.json', 'utf8'));
-  console.log('d', d);
-  console.log('d.sex', d.sex);
-  console.log('d.interval', d.interval);
+  console.log('get setting', d);
   res.json(d);
 });
 app.post('/api/setting', function(req, res) {
-  console.log('req.body', req.body);
+  console.log('post setting', req.body);
   var str = JSON.stringify(req.body, null, '  ');
-  console.log('str', str);
+  //console.log('str', str);
   fs.writeFileSync('setting.json', str);
   res.json(req.body);
 });
@@ -221,8 +231,20 @@ app.get('/api/realtime', function(req, res) {
   }
 
 //  var d = JSON.parse(fs.readFileSync('setting.json', 'utf8'));
-  console.log('d', d);
+  console.log('get realtime', d);
   res.json(d);
+});
+
+global.logging = false;
+app.post('/api/start', function(req, res) {
+  console.log('post start', req.body);
+  global.logging = true;
+  res.json(req.body);
+});
+app.post('/api/stop', function(req, res) {
+  console.log('post stop', req.body);
+  global.logging = false;
+  res.json(req.body);
 });
 /*
 app.get('/', function(req, res) {
