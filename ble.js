@@ -125,17 +125,17 @@ function ti_luxometer(conned_obj, period) {
   });
 }
  
-var sensor1 = false;
+global.sensor1 = false;
 var onDiscover1 = function(sensorTag) {
   sensorTag.connectAndSetup(function() {
-    console.info("connect 1", sensorTag.id);
-    sensor1 = true;
+    console.info("connect1 1", sensorTag.id);
+    global.sensor1 = true;
     gpio.write(9, 1);
-    if (!sensor2) {
+    if (!global.sensor2) {
       SensorTag.discover(onDiscover2);
     }
     sensorTag.readDeviceName(function(error, deviceName) {
-      console.info("connect 2", sensorTag.id);
+      console.info("connect1 2", sensorTag.id);
       ti_ir_temperature(sensorTag, 2000);
       ti_accelerometer(sensorTag, 2000);
       ti_humidity(sensorTag, 2000);
@@ -144,24 +144,24 @@ var onDiscover1 = function(sensorTag) {
     });
   });
   sensorTag.on("disconnect", function() {
-    console.info("disconnect", sensorTag.id);
-    sensor1 = false;
+    console.info("disconnect1", sensorTag.id);
+    global.sensor1 = false;
     gpio.write(9, 0);
     SensorTag.discover(onDiscover1);
   });
 };
 
-var sensor2 = false;
+global.sensor2 = false;
 var onDiscover2 = function(sensorTag) {
   sensorTag.connectAndSetup(function() {
-    console.info("connect 1", sensorTag.id);
-    sensor2 = true;
+    console.info("connect2 1", sensorTag.id);
+    global.sensor2 = true;
     gpio.write(10, 1);
-    if (!sensor1) {
+    if (!global.sensor1) {
       SensorTag.discover(onDiscover1);
     }
     sensorTag.readDeviceName(function(error, deviceName) {
-      console.info("connect 2", sensorTag.id);
+      console.info("connect2 2", sensorTag.id);
       ti_ir_temperature(sensorTag, 2000);
       ti_accelerometer(sensorTag, 2000);
       ti_humidity(sensorTag, 2000);
@@ -170,8 +170,8 @@ var onDiscover2 = function(sensorTag) {
     });
   });
   sensorTag.on("disconnect", function() {
-    console.info("disconnect", sensorTag.id);
-    sensor2 = false;
+    console.info("disconnect2", sensorTag.id);
+    global.sensor2 = false;
     gpio.write(10, 0);
     SensorTag.discover(onDiscover2);
   });
