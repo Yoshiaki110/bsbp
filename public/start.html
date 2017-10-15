@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <head>
+    <title>開始画面</title>
+  </head>
+  <script type="text/javascript">
+    function Get() {
+      var req = new XMLHttpRequest();
+      req.open('GET', '/api/setting', true);
+      req.send(null);
+      req.onreadystatechange = function() {
+        if (req.readyState == 4) { // 通信の完了時
+          if (req.status == 200) { // 通信の成功時
+            var obj = JSON.parse(req.responseText);
+            console.log(obj);
+            frm.sex.value = obj.sex;
+            frm.age.value = obj.age;
+            frm.envsid.value = obj.envsid;
+            frm.bodysid.value = obj.bodysid;
+          }
+        }
+      }
+    }
+    function Post() {
+      var req = new XMLHttpRequest();
+      req.open('POST', '/api/start', true);
+      req.setRequestHeader( 'Content-Type', 'application/json');
+      var data = {};
+      req.send(JSON.stringify(data));
+      req.onreadystatechange = function() {
+        if (req.readyState == 4) { // 通信の完了時
+          if (req.status == 200) { // 通信の成功時
+          }
+        }
+      }
+    }
+    function Home() {
+      location.href = '/';
+    }
+//    window.onload = Get;
+
+  </script>
+  <body>
+    ■開始画面■
+    <form name="frm">
+      モード<br>
+      <INPUT type="button" name="button1" onClick="Home()" value="戻る">
+      <INPUT type="button" name="button2" onClick="Post()" value="開始">
+    </form>
+  </body>
+</html>
+

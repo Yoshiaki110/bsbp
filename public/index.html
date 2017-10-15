@@ -42,6 +42,12 @@
       }
     }
 
+    function Start() {
+      location.href = '/start.html';
+    }
+    function Stop() {
+      location.href = '/stop.html';
+    }
     function History() {
       location.href = '/history.html';
     }
@@ -81,8 +87,10 @@
       明るさ<input type="text" name="lux" size="15" readonly="readonly"><br>
     </form>
 
-    <INPUT type="button" name="button1" onClick="History()" value="履歴画面"><BR>
-    <INPUT type="button" name="button2" onClick="Setting()" value="設定画面"><BR>
+    <INPUT type="button" name="button1" onClick="Start()" value="開始画面"><BR>
+    <INPUT type="button" name="button2" onClick="Stop()" value="終了画面"><BR>
+    <INPUT type="button" name="button3" onClick="History()" value="履歴画面"><BR>
+    <INPUT type="button" name="button4" onClick="Setting()" value="設定画面"><BR>
   </body>
 </html>
 

@@ -1,0 +1,16 @@
+[Unit]
+Description=bsbp ble service
+After=syslog.target network.target pigpio.target
+ 
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/home/pi/bsbp
+ExecStart=/usr/bin/node /home/pi/bsbp/ble.js
+Restart=on-failure
+RestartSec=5
+KillMode=process
+ 
+[Install]
+WantedBy=multi-user.target
+
