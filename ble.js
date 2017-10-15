@@ -11,6 +11,10 @@ function datetimeStr() {
   var now = new Date();
   return now.toFormat('YYYYMMDDHH24MISS');
 }
+function dateStr() {
+  var now = new Date();
+  return now.toFormat('YYYYMMDD');
+}
 function timeStr() {
   var now = new Date();
   return now.toFormat('HH24MI');
@@ -64,7 +68,7 @@ function ti_simple_key(conned_obj) {
  
 function ti_gyroscope(conned_obj) {
   conned_obj.enableGyroscope(function() {
-    conned_obj.setGyroscopePeriod(period, function() {
+    conned_obj.setGyroscopePeriod(/*period*/500, function() {
       conned_obj.notifyGyroscope(function() {
         //console.info("ready: notifyGyroscope");
         //console.info("notify period = " + period + "ms");
@@ -98,7 +102,7 @@ function ti_ir_temperature(conned_obj) {
  
 function ti_accelerometer(conned_obj) {
   conned_obj.enableAccelerometer(function() {
-    conned_obj.setAccelerometerPeriod(period, function() {
+    conned_obj.setAccelerometerPeriod(/*period*/500, function() {
       conned_obj.notifyAccelerometer(function() {
         //console.info("ready: notifyAccelerometer");
         //console.info("notify period = " + period + "ms");
@@ -200,6 +204,8 @@ function discover(uuid) {
     /* In case of SensorTag PowerOff or out of range when fired `onDisconnect` */
     sensorTag.on("disconnect", function() {
       console.info("disconnect and exit");
+      fs.rename('data.csv', dateStr() + '.csv', function (err) {
+      });
       process.exit(1);
     });
   });
@@ -212,7 +218,9 @@ function loop() {
   var log = timeStr() + '\t' + global.obj_temp[B] + '\t' + global.temp[B] + '\t' + global.hum[B] + '\t' + global.accel_x[B] + '\t' + global.accel_y[B] + '\t' + global.accel_z[B] + '\t' + global.gyro_x[B] + '\t' + global.gyro_y[B] + '\t' + global.gyro_z[B] + '\t' + global.temp[E] + '\t' + global.hum[E] + '\t' + global.baro[E] + '\t' + global.lux[E];
   write('data.csv', log + '\n');
   console.log(log);
-  setTimeout(loop, 10000);
+  setTimeout(loop, 60000);
 }
+// ヘッダー
+write('data.csv', 'time\tbody-temperature\tbody-ambient-temperature\tbody-humidity\tbody-gyrodcope-x\tbody-gyrodcope-y\tbody-gyrodcope-z\tbody-accelerometer-x\tbody-accelerometer-y\tbody-accelerometer-z\ttemperature\thumidity\tbarometer\tilluminometer\n');
 setTimeout(loop, 5000);
 
