@@ -25,7 +25,7 @@ var app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 //app.use('/', express.static('public'));
-app.use('/', express.static('../app'));
+app.use('/', express.static('../bsbp_app'));
 
 app.get('/api/setting', function(req, res) {
   var d = JSON.parse(fs.readFileSync('setting.json', 'utf8'));
@@ -64,7 +64,7 @@ app.get('/api/realtime', function(req, res) {
 
 app.post('/api/changerow', function(req, res) {
   console.log('post changerow', req.body);
-  var file = '../app/' + req.body.file;
+  var file = '../bsbp_app/' + req.body.file;
   var dat = '';
   var lines = fs.readFileSync(file).toString().split('\n');
   for (var i = 0; i < lines.length; i++) {
