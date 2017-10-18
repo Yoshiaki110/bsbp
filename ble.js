@@ -1,3 +1,6 @@
+var common = require('./common.js');
+common.LineMsg('bsbp ble開始しました');
+
 var gpio = require('./gpio.js');
 gpio.mode(8, 'out');
 gpio.mode(9, 'out');
