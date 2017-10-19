@@ -240,9 +240,10 @@ function discover(uuid) {
 
 discover(E);
 
+var SEP = '\t';
 function loop() {
   console.log("loop");
-  var log = timeStr() + '\t' + global.obj_temp[B] + '\t' + global.temp[B] + '\t' + global.hum[B] + '\t' + global.accel_x[B] + '\t' + global.accel_y[B] + '\t' + global.accel_z[B] + '\t' + global.gyro_x[B] + '\t' + global.gyro_y[B] + '\t' + global.gyro_z[B] + '\t' + global.temp[E] + '\t' + global.hum[E] + '\t' + global.baro[E] + '\t' + global.lux[E];
+  var log = timeStr() + SEP + global.obj_temp[B] + SEP + global.temp[B] + SEP + global.hum[B] + SEP + global.accel_x[B] + SEP + global.accel_y[B] + SEP + global.accel_z[B] + SEP + global.gyro_x[B] + SEP + global.gyro_y[B] + SEP + global.gyro_z[B] + SEP + global.temp[E] + SEP + global.hum[E] + SEP + global.baro[E] + SEP + global.lux[E];
   write('data.csv', log + '\n');
   console.log(log);
   setTimeout(loop, 60000);
@@ -251,7 +252,7 @@ function loop() {
 try {
   fs.statSync('executing');
 } catch(err) {    // ファイルがなかったらヘッダーを書く
-  write('data.csv', 'time\tbody-temperature\tbody-ambient-temperature\tbody-humidity\tbody-gyrodcope-x\tbody-gyrodcope-y\tbody-gyrodcope-z\tbody-accelerometer-x\tbody-accelerometer-y\tbody-accelerometer-z\ttemperature\thumidity\tbarometer\tilluminometer\n');
+  write('data.csv', 'time' + SEP + 'body-temperature' + SEP + 'body-ambient-temperature' + SEP + 'body-humidity' + SEP + 'body-gyrodcope-x' + SEP + 'body-gyrodcope-y' + SEP + 'body-gyrodcope-z' + SEP + 'body-accelerometer-x' + SEP + 'body-accelerometer-y' + SEP + 'body-accelerometer-z' + SEP + 'temperature' + SEP + 'humidity' + SEP + 'barometer' + SEP + 'illuminometer\n');
 }
 
 setTimeout(loop, 5000);

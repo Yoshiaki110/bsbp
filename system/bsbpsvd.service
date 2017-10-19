@@ -1,0 +1,16 @@
+[Unit]
+Description=bsbp server service
+After=syslog.target network.target pigpio.target
+ 
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/home/pi/bsbp
+ExecStart=/usr/bin/node /home/pi/bsbp/server.js
+Restart=on-failure
+RestartSec=5
+KillMode=process
+ 
+[Install]
+WantedBy=multi-user.target
+
