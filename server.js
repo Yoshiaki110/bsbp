@@ -92,4 +92,17 @@ app.post('/api/stop', function(req, res) {
   fs.unlinkSync('executing');
   res.json(req.body);
 });
-app.listen(80);
+
+
+var common = require('./common.js');
+
+function prepare() {
+  if (common.IpAddress().length == 0) {
+    setTimeout(prepare, 1000);
+  } else {
+    common.LineMsg('bsbp serverŠJŽn‚µ‚Ü‚µ‚½');
+    app.listen(80);
+  }
+}
+
+prepare();
