@@ -28,55 +28,6 @@ function test(sensorTag) {
         });
       },
       function(callback) {
-        console.log('readDeviceName');
-        sensorTag.readDeviceName(function(error, deviceName) {
-          console.log('\tdevice name = ' + deviceName);
-          callback();
-        });
-      },
-      function(callback) {
-        console.log('readSystemId');
-        sensorTag.readSystemId(function(error, systemId) {
-          console.log('\tsystem id = ' + systemId);
-          callback();
-        });
-      },
-      function(callback) {
-        console.log('readSerialNumber');
-        sensorTag.readSerialNumber(function(error, serialNumber) {
-          console.log('\tserial number = ' + serialNumber);
-          callback();
-        });
-      },
-      function(callback) {
-        console.log('readFirmwareRevision');
-        sensorTag.readFirmwareRevision(function(error, firmwareRevision) {
-          console.log('\tfirmware revision = ' + firmwareRevision);
-          callback();
-        });
-      },
-      function(callback) {
-        console.log('readHardwareRevision');
-        sensorTag.readHardwareRevision(function(error, hardwareRevision) {
-          console.log('\thardware revision = ' + hardwareRevision);
-          callback();
-        });
-      },
-      function(callback) {
-        console.log('readSoftwareRevision');
-        sensorTag.readHardwareRevision(function(error, softwareRevision) {
-          console.log('\tsoftware revision = ' + softwareRevision);
-          callback();
-        });
-      },
-      function(callback) {
-        console.log('readManufacturerName');
-        sensorTag.readManufacturerName(function(error, manufacturerName) {
-          console.log('\tmanufacturer name = ' + manufacturerName);
-          callback();
-        });
-      },
-      function(callback) {
         console.log('enableIrTemperature');
         sensorTag.enableIrTemperature(callback);
       },
@@ -308,109 +259,41 @@ function test(sensorTag) {
         console.log('disableGyroscope');
         sensorTag.disableGyroscope(callback);
       },
+
+
       function(callback) {
-        if (sensorTag.type === 'cc2540') {
-          async.series([
-            function(callback) {
-              console.log('readTestData');
-              sensorTag.readTestData(function(error, data) {
-                console.log('\tdata = ' + data);
+        console.log('enableLuxometer');
+        sensorTag.enableLuxometer(callback);
+      },
+      function(callback) {
+        setTimeout(callback, 2000);
+      },
+      function(callback) {
+        if (USE_READ) {
+          console.log('readLuxometer');
+          sensorTag.readLuxometer(function(error, lux) {
+            console.log('\tlux = %d', lux.toFixed(1));
 
-                callback();
-              });
-            },
-            function(callback) {
-              console.log('readTestConfiguration');
-              sensorTag.readTestConfiguration(function(error, configuration) {
-                console.log('\tconfiguration = ' + configuration);
-
-                callback();
-              });
-            },
-            function() {
-              callback();
-            }
-          ]);
-        } else if (sensorTag.type === 'cc2650') {
-          async.series([
-            function(callback) {
-              console.log('readIoData');
-              sensorTag.readIoData(function(error, value) {
-                console.log('\tdata = ' + value);
-
-                 console.log('writeIoData');
-                sensorTag.writeIoData(value, callback);
-              });
-            },
-            function(callback) {
-              console.log('readIoConfig');
-              sensorTag.readIoConfig(function(error, value) {
-                console.log('\tconfig = ' + value);
-
-                 console.log('writeIoConfig');
-                sensorTag.writeIoConfig(value, callback);
-              });
-            },
-            function(callback) {
-              console.log('enableLuxometer');
-              sensorTag.enableLuxometer(callback);
-            },
-            function(callback) {
-              setTimeout(callback, 2000);
-            },
-            function(callback) {
-              if (USE_READ) {
-                console.log('readLuxometer');
-                sensorTag.readLuxometer(function(error, lux) {
-                  console.log('\tlux = %d', lux.toFixed(1));
-
-                  callback();
-                });
-              } else {
-                sensorTag.on('luxometerChange', function(lux) {
-                  console.log('\tlux = %d', lux.toFixed(1));
-                });
-
-                console.log('setLuxometer');
-                sensorTag.setLuxometerPeriod(500, function(error) {
-                  console.log('notifyLuxometer');
-                  sensorTag.notifyLuxometer(function(error) {
-                    setTimeout(function() {
-                      console.log('unnotifyLuxometer');
-                      sensorTag.unnotifyLuxometer(callback);
-                    }, 5000);
-                  });
-                });
-              }
-            },
-            function(callback) {
-              console.log('disableLuxometer');
-              sensorTag.disableLuxometer(callback);
-            },
-            function() {
-              callback();
-            }
-          ]);
+            callback();
+          });
         } else {
-          callback();
+          sensorTag.on('luxometerChange', function(lux) {
+            console.log('\tlux = %d', lux.toFixed(1));
+          });
+
+          console.log('setLuxometer');
+          sensorTag.setLuxometerPeriod(500, function(error) {
+            console.log('notifyLuxometer');
+            sensorTag.notifyLuxometer(function(error) {
+              setTimeout(function() {
+                console.log('unnotifyLuxometer');
+                sensorTag.unnotifyLuxometer(callback);
+              }, 5000);
+            });
+          });
         }
       },
-      function(callback) {
-        console.log('readSimpleRead - waiting for button press ...');
-        sensorTag.on('simpleKeyChange', function(left, right, reedRelay) {
-          console.log('left: ' + left);
-          console.log('right: ' + right);
-          if (sensorTag.type === 'cc2650') {
-            console.log('reed relay: ' + reedRelay);
-          }
 
-          if (left || right) {
-            sensorTag.notifySimpleKey(callback);
-          }
-        });
-
-        sensorTag.notifySimpleKey();
-      },
       function(callback) {
         console.log('disconnect');
         sensorTag.disconnect(callback);

@@ -82,18 +82,12 @@ function ti_simple_key(conned_obj) {
  
 function ti_gyroscope(conned_obj) {
   conned_obj.enableGyroscope(function() {
-    conned_obj.setGyroscopePeriod(/*PERIOD*/500, function() {
+    conned_obj.setGyroscopePeriod(1000, function() {
       conned_obj.notifyGyroscope(function() {
         //console.info("ready: notifyGyroscope");
         //console.info("notify period = " + PERIOD + "ms");
         conned_obj.on('gyroscopeChange', function(x, y, z) {
           //console.log('gyro_x: ' + x, 'gyro_y: ' + y, 'gyro_z: ' + z);
-//          global.gyro_x[conned_obj.id] = x.toFixed(1);
-//          global.gyro_y[conned_obj.id] = y.toFixed(1);
-//          global.gyro_z[conned_obj.id] = z.toFixed(1);
-          var x = x.toFixed(1);
-          var y = y.toFixed(1);
-          var z = z.toFixed(1);
           global.gyro_x[conned_obj.id] = x.toFixed(1);
           global.gyro_y[conned_obj.id] = y.toFixed(1);
           global.gyro_z[conned_obj.id] = z.toFixed(1);
@@ -126,7 +120,7 @@ function ti_ir_temperature(conned_obj) {
  
 function ti_accelerometer(conned_obj) {
   conned_obj.enableAccelerometer(function() {
-    conned_obj.setAccelerometerPeriod(PERIOD, function() {
+    conned_obj.setAccelerometerPeriod(1000, function() {
       conned_obj.notifyAccelerometer(function() {
         //console.info("ready: notifyAccelerometer");
         //console.info("notify period = " + PERIOD + "ms");
@@ -214,11 +208,11 @@ var SensorTag = require('sensortag');
 
 function discover(uuid) {
   SensorTag.discoverByUuid(uuid, function(sensorTag) {
-    console.info("found: connect and setup ... (waiting 5~10 seconds)");
+    console.info('found:' + sensorTag.id);
     sensorTag.connectAndSetup(function() {
       discover(B);
-      sensorTag.readDeviceName(function(error, deviceName) {
-        console.info("connect: " + deviceName);
+      sensorTag.readBatteryLevel(function(error, batteryLevel) {
+        console.info('connect:' + sensorTag.id + ' batt:' +  batteryLevel + '%');
         //ti_simple_key(sensorTag);
         ti_gyroscope(sensorTag);
         ti_ir_temperature(sensorTag);
@@ -252,7 +246,7 @@ function loop() {
 try {
   fs.statSync('executing');
 } catch(err) {    // ファイルがなかったらヘッダーを書く
-  write('data.csv', 'time' + SEP + 'body-temperature' + SEP + 'body-ambient-temperature' + SEP + 'body-humidity' + SEP + 'body-gyrodcope-x' + SEP + 'body-gyrodcope-y' + SEP + 'body-gyrodcope-z' + SEP + 'body-accelerometer-x' + SEP + 'body-accelerometer-y' + SEP + 'body-accelerometer-z' + SEP + 'temperature' + SEP + 'humidity' + SEP + 'barometer' + SEP + 'illuminometer\n');
+  write('data.csv', 'time' + SEP + 'body_temperature' + SEP + 'body_ambient_temperature' + SEP + 'body_humidity' + SEP + 'body_gyrodcope_x' + SEP + 'body_gyrodcope_y' + SEP + 'body_gyrodcope_z' + SEP + 'body_accelerometer_x' + SEP + 'body_accelerometer_y' + SEP + 'body_accelerometer_z' + SEP + 'temperature' + SEP + 'humidity' + SEP + 'barometer' + SEP + 'illuminometer\n');
 }
 
 setTimeout(loop, 5000);
