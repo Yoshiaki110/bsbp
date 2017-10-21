@@ -34,3 +34,19 @@ exports.LineMsg = function(msg) {
     });
 }
 
+require('date-utils');
+exports.datetimeStr = function(msg) {
+  var now = new Date();
+  return now.toFormat('YYYYMMDDHH24MISS');
+}
+
+exports.dateStr = function(msg) {
+  var now = new Date();
+  return now.toFormat('YYYYMMDD');
+}
+
+exports.timeStr = function(msg) {
+  var now = new Date();
+  return now.toFormat('HH24MI');
+}
+

@@ -216,6 +216,7 @@ function ti_luxometer(conned_obj) {
  
 var SensorTag = require('sensortag');
 var aggregate = require('./aggregate.js');
+var execSync = require('child_process').execSync;
 
 function discoverB() {
   SensorTag.discoverByUuid(B, function(sensorTag) {
@@ -235,6 +236,7 @@ function discoverB() {
     });
     sensorTag.on("disconnect", function() {
       console.info("disconnect(B) and exit");
+      execSync('pkill mpg321');
       aggregate.aggregate(DATA_DIR + DATA_CSV, RESULT_DIR + RESULT_CSV, dateStr());
       fs.renameSync(DATA_DIR + DATA_CSV, DATA_DIR + dateStr() + '.csv');
       restart();
@@ -260,6 +262,7 @@ function discoverE() {
     });
     sensorTag.on("disconnect", function() {
       console.info("disconnect(E) and exit");
+      execSync('pkill mpg321');
       aggregate.aggregate(DATA_DIR + DATA_CSV, RESULT_DIR + RESULT_CSV, dateStr());
       fs.renameSync(DATA_DIR + DATA_CSV, DATA_DIR + dateStr() + '.csv');
       restart();

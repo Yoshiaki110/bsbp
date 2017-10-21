@@ -1,5 +1,5 @@
 var fs = require("fs");
-
+/*
 function write(fname, data) {
   try {
     var fd = fs.openSync(fname, "a");
@@ -16,7 +16,7 @@ function read(fname) {
     console.log(e);
   }
 }
-
+*/
 
 var express = require('express');
 var bodyParser = require('body-parser');
@@ -25,7 +25,7 @@ var app = express();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-//app.use('/', express.static('public'));
+app.use('/ura/', express.static('public'));
 app.use('/', express.static('../bsbp_app'));
 
 app.get('/api/setting', function(req, res) {
@@ -82,20 +82,39 @@ app.post('/api/changerow', function(req, res) {
   res.json(req.body);
 });
 
-global.logging = false;
+global.alarm = '';
+const execSync = require('child_process').execSync;
+const exec = require('child_process').exec;
+//global.logging = false;
 app.post('/api/start', function(req, res) {
   console.log('post start', req.body);
-  write('executing', 'executing')
+  global.alarm = req.body.time;
   res.json(req.body);
 });
 app.post('/api/stop', function(req, res) {
   console.log('post stop', req.body);
-  fs.unlinkSync('executing');
+  execSync('pkill mpg321');
   res.json(req.body);
 });
 
 
 var common = require('./common.js');
+
+global.alarming = false;
+
+function loop() {
+  var time = common.timeStr();
+  console.log('loop', time, global.alarm);
+  if (time == global.alarm) {
+    if (!global.alarming) {
+      exec('mpg321 ../trumpet2.mp3 -l0 -g 1000');
+      global.alarming = true;
+    }
+  } else {
+    global.alarming = false;
+  }
+  setTimeout(loop, 50000); 
+}
 
 function prepare() {
   if (common.IpAddress().length == 0) {
@@ -103,6 +122,7 @@ function prepare() {
   } else {
     common.LineMsg('bsbp server start');
     app.listen(80);
+    loop();
   }
 }
 
