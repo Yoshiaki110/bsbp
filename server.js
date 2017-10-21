@@ -1,4 +1,5 @@
 var fs = require("fs");
+
 function write(fname, data) {
   try {
     var fd = fs.openSync(fname, "a");
@@ -72,7 +73,7 @@ app.post('/api/changerow', function(req, res) {
     if ((i+1) == req.body.line) {
       dat = dat + req.body.data + '\n';
     } else if ((i+1) == lines.length && lines[i] == '') {
-      ; // 最終行でデータがない場合、書き出さない
+      ; // last line and no data then not output
     } else {
       dat = dat + lines[i] + '\n';
     }
@@ -100,7 +101,7 @@ function prepare() {
   if (common.IpAddress().length == 0) {
     setTimeout(prepare, 1000);
   } else {
-    common.LineMsg('bsbp server開始しました');
+    common.LineMsg('bsbp server start');
     app.listen(80);
   }
 }

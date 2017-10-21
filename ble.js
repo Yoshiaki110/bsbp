@@ -1,5 +1,6 @@
 var common = require('./common.js');
 common.LineMsg('bsbp ble開始しました');
+console.log('bsbp ble開始しました');
 
 var gpio = require('./gpio.js');
 gpio.mode(8, 'out');
@@ -52,12 +53,20 @@ function read(fname) {
 }
 
 
-var E = "247189cfa806";
-var B = "247189cf7200";
+var DATA_CSV = 'data.csv';
+var DATA_DIR = '../bsbp_app/data/';
+var RESULT_CSV = 'result.csv';
+var RESULT_DIR = '../bsbp_app/data/';
+//var E = "247189cfa806";
+//var B = "247189cf7200";
+var B = "247189cfa806";
+var E = "247189cf7200";
 var PERIOD = 10000; // ms
 
-global.mlogs = [];
+//global.mlogs = [];
 
+global.connectedE = false;
+global.connectedB = false;
 global.obj_temp = {};
 global.temp = {};
 global.accel_x = {};
@@ -146,6 +155,7 @@ function ti_humidity(conned_obj) {
         conned_obj.on('humidityChange', function(temperature, humidity) {
             //console.log('\ttemperature = %d °C', temperature.toFixed(1));
             //console.log('\thumidity = %d %', humidity.toFixed(1));
+            //console.log(conned_obj.id, temperature.toFixed(1), humidity.toFixed(1));
 //          global.temp[conned_obj.id] = temperature.toFixed(1); たぶんこれが-40℃になる？
 //          if (humidity.toFixed(1) == 100) {
 //            console.error('humidity is 100% : ' + humidity.toFixed(1));
@@ -205,50 +215,76 @@ function ti_luxometer(conned_obj) {
 }
  
 var SensorTag = require('sensortag');
+var aggregate = require('./aggregate.js');
 
-function discover(uuid) {
-  SensorTag.discoverByUuid(uuid, function(sensorTag) {
-    console.info('found:' + sensorTag.id);
+function discoverB() {
+  SensorTag.discoverByUuid(B, function(sensorTag) {
+    console.info('found(B):' + sensorTag.id);
     sensorTag.connectAndSetup(function() {
-      discover(B);
       sensorTag.readBatteryLevel(function(error, batteryLevel) {
-        console.info('connect:' + sensorTag.id + ' batt:' +  batteryLevel + '%');
-        //ti_simple_key(sensorTag);
+        console.info('connect(B):' + sensorTag.id + ' batt:' +  batteryLevel + '%');
+        global.connectedB = true;
+        gpio.write(8, 1);   // red
         ti_gyroscope(sensorTag);
         ti_ir_temperature(sensorTag);
         ti_accelerometer(sensorTag);
         ti_humidity(sensorTag);
-        //ti_magnetometer(sensorTag);
+        //ti_barometric_pressure(sensorTag);
+        //ti_luxometer(sensorTag);
+      });
+    });
+    sensorTag.on("disconnect", function() {
+      console.info("disconnect(B) and exit");
+      aggregate.aggregate(DATA_DIR + DATA_CSV, RESULT_DIR + RESULT_CSV, dateStr());
+      fs.renameSync(DATA_DIR + DATA_CSV, DATA_DIR + dateStr() + '.csv');
+      restart();
+    });
+  });
+}
+function discoverE() {
+  SensorTag.discoverByUuid(E, function(sensorTag) {
+    console.info('found(E):' + sensorTag.id);
+    sensorTag.connectAndSetup(function() {
+      discoverB();
+      sensorTag.readBatteryLevel(function(error, batteryLevel) {
+        console.info('connect(E):' + sensorTag.id + ' batt:' +  batteryLevel + '%');
+        global.connectedE = true;
+        gpio.write(9, 1);   // green
+        //ti_gyroscope(sensorTag);
+        ti_ir_temperature(sensorTag);
+        //ti_accelerometer(sensorTag);
+        ti_humidity(sensorTag);
         ti_barometric_pressure(sensorTag);
         ti_luxometer(sensorTag);
       });
     });
-    /* In case of SensorTag PowerOff or out of range when fired `onDisconnect` */
     sensorTag.on("disconnect", function() {
-      console.info("disconnect and exit");
-      fs.renameSync('data.csv', dateStr() + '.csv');
+      console.info("disconnect(E) and exit");
+      aggregate.aggregate(DATA_DIR + DATA_CSV, RESULT_DIR + RESULT_CSV, dateStr());
+      fs.renameSync(DATA_DIR + DATA_CSV, DATA_DIR + dateStr() + '.csv');
       restart();
     });
   });
 }
 
-discover(E);
-
 var SEP = '\t';
 function loop() {
   console.log("loop");
-  var log = timeStr() + SEP + global.obj_temp[B] + SEP + global.temp[B] + SEP + global.hum[B] + SEP + global.accel_x[B] + SEP + global.accel_y[B] + SEP + global.accel_z[B] + SEP + global.gyro_x[B] + SEP + global.gyro_y[B] + SEP + global.gyro_z[B] + SEP + global.temp[E] + SEP + global.hum[E] + SEP + global.baro[E] + SEP + global.lux[E];
-  write('data.csv', log + '\n');
-  console.log(log);
+  if (global.connectedE) {
+    var log = timeStr() + SEP + global.obj_temp[B] + SEP + global.temp[B] + SEP + global.hum[B] + SEP + global.accel_x[B] + SEP + global.accel_y[B] + SEP + global.accel_z[B] + SEP + global.gyro_x[B] + SEP + global.gyro_y[B] + SEP + global.gyro_z[B] + SEP + global.temp[E] + SEP + global.hum[E] + SEP + global.baro[E] + SEP + global.lux[E];
+    write(DATA_DIR + DATA_CSV, log + '\n');
+    console.log(log);
+  }
   setTimeout(loop, 60000);
 }
 // ヘッダー
 try {
-  fs.statSync('executing');
+  fs.statSync(DATA_DIR + DATA_CSV);
 } catch(err) {    // ファイルがなかったらヘッダーを書く
-  write('data.csv', 'time' + SEP + 'body_temperature' + SEP + 'body_ambient_temperature' + SEP + 'body_humidity' + SEP + 'body_gyrodcope_x' + SEP + 'body_gyrodcope_y' + SEP + 'body_gyrodcope_z' + SEP + 'body_accelerometer_x' + SEP + 'body_accelerometer_y' + SEP + 'body_accelerometer_z' + SEP + 'temperature' + SEP + 'humidity' + SEP + 'barometer' + SEP + 'illuminometer\n');
+  write(DATA_DIR + DATA_CSV, 'time' + SEP + 'body_temperature' + SEP + 'body_ambient_temperature' + SEP + 'body_humidity' + SEP + 'body_gyrodcope_x' + SEP + 'body_gyrodcope_y' + SEP + 'body_gyrodcope_z' + SEP + 'body_accelerometer_x' + SEP + 'body_accelerometer_y' + SEP + 'body_accelerometer_z' + SEP + 'temperature' + SEP + 'humidity' + SEP + 'barometer' + SEP + 'illuminometer\n');
 }
 
+discoverE();
 setTimeout(loop, 5000);
 
 /*
