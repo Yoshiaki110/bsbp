@@ -83,17 +83,20 @@ app.post('/api/changerow', function(req, res) {
 });
 
 global.alarm = '';
+global.alarmfile = '';
 const execSync = require('child_process').execSync;
 const exec = require('child_process').exec;
 //global.logging = false;
 app.post('/api/start', function(req, res) {
   console.log('post start', req.body);
   global.alarm = req.body.time;
+  global.alarmfile = req.body.file;
   res.json(req.body);
 });
 app.post('/api/stop', function(req, res) {
   console.log('post stop', req.body);
   execSync('pkill mpg321');
+  global.alarm = '';
   res.json(req.body);
 });
 
@@ -107,7 +110,8 @@ function loop() {
   console.log('loop', time, global.alarm);
   if (time == global.alarm) {
     if (!global.alarming) {
-      exec('mpg321 ../trumpet2.mp3 -l0 -g 1000');
+      var cmd = 'mpg321 ../bsbp_app/' + global.alarmfile + ' -l0 -g 1000';
+      exec(cmd);
       global.alarming = true;
     }
   } else {

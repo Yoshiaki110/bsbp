@@ -1,5 +1,5 @@
-//var BLEINT = 10000;var FILEINT = 60000;
-var BLEINT = 1000;var FILEINT = 6000;
+//var BLEINT = 30000;var FILEINT = 60000;
+var BLEINT = 3000;var FILEINT = 6000;
 
 var common = require('./common.js');
 common.LineMsg('bsbp ble開始しました');
@@ -100,7 +100,7 @@ function ti_gyroscope(conned_obj) {
         //console.info("ready: notifyGyroscope");
         //console.info("notify period = " + PERIOD + "ms");
         conned_obj.on('gyroscopeChange', function(x, y, z) {
-          //console.log('gyro_x: ' + x, 'gyro_y: ' + y, 'gyro_z: ' + z);
+          console.log('gyro_x: ' + x, 'gyro_y: ' + y, 'gyro_z: ' + z);
           global.gyro_x[conned_obj.id] = x.toFixed(1);
           global.gyro_y[conned_obj.id] = y.toFixed(1);
           global.gyro_z[conned_obj.id] = z.toFixed(1);
@@ -218,7 +218,8 @@ function ti_luxometer(conned_obj) {
   });
 }
  
-var SensorTag = require('sensortag');
+//var SensorTag = require('sensortag');
+var SensorTag = require('./index');
 var aggregate = require('./aggregate.js');
 var execSync = require('child_process').execSync;
 

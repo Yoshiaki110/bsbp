@@ -1,4 +1,5 @@
-var SensorTag = require('sensortag');
+//var SensorTag = require('sensortag');
+var SensorTag = require('./index');
 var async = require('async');
 
 //var USE_READ = true;

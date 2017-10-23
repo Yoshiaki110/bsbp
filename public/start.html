@@ -26,7 +26,7 @@
       var req = new XMLHttpRequest();
       req.open('POST', '/api/start', true);
       req.setRequestHeader( 'Content-Type', 'application/json');
-      var data = {time: frm.hour.value + frm.minute.value};
+      var data = {time: frm.hour.value + frm.minute.value, file: frm.file.value};
       req.send(JSON.stringify(data));
       req.onreadystatechange = function() {
         if (req.readyState == 4) { // 通信の完了時
@@ -134,6 +134,7 @@
         <option value="58">58</option>
         <option value="59">59</option>
       </select><br>
+      アラームファイル<input type="text" name="file" size="15" value="music/1.mp3"><br>
       <INPUT type="button" name="button1" onClick="Home()" value="戻る">
       <INPUT type="button" name="button2" onClick="Post()" value="開始">
     </form>

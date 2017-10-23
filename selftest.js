@@ -1,4 +1,5 @@
-var SensorTag = require('sensortag');
+//var SensorTag = require('sensortag');
+var SensorTag = require('./index');
 var async = require('async');
 
 SensorTag.discover(function(sensorTag) {
@@ -37,6 +38,41 @@ function test(sensorTag) {
         console.log('readIoData');
         sensorTag.readIoData(function(error, value) {
           console.log('readIoData error:' + error + ' value:' + value);
+          if (value & 1) {
+            console.log('OK IR temperature sensor');
+          } else {
+            console.log('NG IR temperature sensor');
+          }
+          if (value & 2) {
+            console.log('OK Humidity sensor');
+          } else {
+            console.log('NG Humidity sensor');
+          }
+          if (value & 4) {
+            console.log('OK Optical sensor');
+          } else {
+            console.log('NG Optical sensor');
+          }
+          if (value & 8) {
+            console.log('OK Pressure sensor');
+          } else {
+            console.log('NG Pressure sensor');
+          }
+          if (value & 16) {
+            console.log('OK MPU');
+          } else {
+            console.log('NG MPU');
+          }
+          if (value & 32) {
+            console.log('OK Magnetometer');
+          } else {
+            console.log('NG Magnetometer');
+          }
+          if (value & 64) {
+            console.log('OK External Flash');
+          } else {
+            console.log('NG External Flash');
+          }
           setTimeout(callback, 1000);
         });
       },
