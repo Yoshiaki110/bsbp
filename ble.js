@@ -1,3 +1,6 @@
+//var BLEINT = 10000;var FILEINT = 60000;
+var BLEINT = 1000;var FILEINT = 6000;
+
 var common = require('./common.js');
 common.LineMsg('bsbp ble開始しました');
 console.log('bsbp ble開始しました');
@@ -53,6 +56,7 @@ function read(fname) {
 }
 
 
+var CSV = '.csv';
 var DATA_CSV = 'data.csv';
 var DATA_DIR = '../bsbp_app/data/';
 var RESULT_CSV = 'result.csv';
@@ -61,7 +65,7 @@ var RESULT_DIR = '../bsbp_app/data/';
 //var B = "247189cf7200";
 var B = "247189cfa806";
 var E = "247189cf7200";
-var PERIOD = 10000; // ms
+var PERIOD = BLEINT; // ms
 
 //global.mlogs = [];
 
@@ -236,9 +240,12 @@ function discoverB() {
     });
     sensorTag.on("disconnect", function() {
       console.info("disconnect(B) and exit");
-      execSync('pkill mpg321');
-      aggregate.aggregate(DATA_DIR + DATA_CSV, RESULT_DIR + RESULT_CSV, dateStr());
-      fs.renameSync(DATA_DIR + DATA_CSV, DATA_DIR + dateStr() + '.csv');
+      try {
+        execSync('pkill mpg321');
+      } catch (e) {
+        //console.log(e);
+      }
+      rename();
       restart();
     });
   });
@@ -262,29 +269,49 @@ function discoverE() {
     });
     sensorTag.on("disconnect", function() {
       console.info("disconnect(E) and exit");
-      execSync('pkill mpg321');
-      aggregate.aggregate(DATA_DIR + DATA_CSV, RESULT_DIR + RESULT_CSV, dateStr());
-      fs.renameSync(DATA_DIR + DATA_CSV, DATA_DIR + dateStr() + '.csv');
+      try {
+        execSync('pkill mpg321');
+      } catch (e) {
+        //console.log(e);
+      }
+      rename();
       restart();
     });
   });
 }
 
+function rename() {
+  console.log("renane");
+  for (var i = 1; i < 100; i++) {
+    var fname = dateStr() + (('00' + i).slice(-2));
+    try {
+      fs.statSync(DATA_DIR + fname + CSV);
+      console.log("file exist :" + DATA_DIR + fname + CSV);
+    } catch(err) {    // ファイルがなかったらヘッダーを書く
+      console.log("renane " + DATA_DIR + DATA_CSV + ' ' + DATA_DIR + fname + CSV);
+      aggregate.aggregate(DATA_DIR + DATA_CSV, RESULT_DIR + RESULT_CSV, fname);
+      fs.renameSync(DATA_DIR + DATA_CSV, DATA_DIR + fname + CSV);
+      break;
+    }
+  }
+}
+
+
 var SEP = '\t';
 function loop() {
-  console.log("loop");
+  console.log("loop " + global.connectedE);
   if (global.connectedE) {
+    // ヘッダー
+    try {
+      fs.statSync(DATA_DIR + DATA_CSV);
+    } catch(err) {    // ファイルがなかったらヘッダーを書く
+      write(DATA_DIR + DATA_CSV, 'time' + SEP + 'body_temperature' + SEP + 'body_ambient_temperature' + SEP + 'body_humidity' + SEP + 'body_gyrodcope_x' + SEP + 'body_gyrodcope_y' + SEP + 'body_gyrodcope_z' + SEP + 'body_accelerometer_x' + SEP + 'body_accelerometer_y' + SEP + 'body_accelerometer_z' + SEP + 'temperature' + SEP + 'humidity' + SEP + 'barometer' + SEP + 'illuminometer\n');
+    }
     var log = timeStr() + SEP + global.obj_temp[B] + SEP + global.temp[B] + SEP + global.hum[B] + SEP + global.accel_x[B] + SEP + global.accel_y[B] + SEP + global.accel_z[B] + SEP + global.gyro_x[B] + SEP + global.gyro_y[B] + SEP + global.gyro_z[B] + SEP + global.temp[E] + SEP + global.hum[E] + SEP + global.baro[E] + SEP + global.lux[E];
     write(DATA_DIR + DATA_CSV, log + '\n');
     console.log(log);
   }
-  setTimeout(loop, 60000);
-}
-// ヘッダー
-try {
-  fs.statSync(DATA_DIR + DATA_CSV);
-} catch(err) {    // ファイルがなかったらヘッダーを書く
-  write(DATA_DIR + DATA_CSV, 'time' + SEP + 'body_temperature' + SEP + 'body_ambient_temperature' + SEP + 'body_humidity' + SEP + 'body_gyrodcope_x' + SEP + 'body_gyrodcope_y' + SEP + 'body_gyrodcope_z' + SEP + 'body_accelerometer_x' + SEP + 'body_accelerometer_y' + SEP + 'body_accelerometer_z' + SEP + 'temperature' + SEP + 'humidity' + SEP + 'barometer' + SEP + 'illuminometer\n');
+  setTimeout(loop, FILEINT);
 }
 
 discoverE();
