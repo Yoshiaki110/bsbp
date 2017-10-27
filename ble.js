@@ -1,5 +1,5 @@
-//var BLEINT = 30000;var FILEINT = 60000;
-var BLEINT = 3000;var FILEINT = 6000;
+//var BLEINT = 2000;var FILEINT = 60000;
+var BLEINT = 2000;var FILEINT = 6000;
 
 var common = require('./common.js');
 common.LineMsg('bsbp ble開始しました');
@@ -54,7 +54,14 @@ function read(fname) {
     console.log(e);
   }
 }
-
+var fdfifo = fs.openSync('fifo', "w");
+function fifo(data) {
+  try {
+    fs.writeSync(fdfifo, data);
+  } catch (e) {
+    console.log(e);
+  }
+}
 
 var CSV = '.csv';
 var DATA_CSV = 'data.csv';
@@ -95,12 +102,12 @@ function ti_simple_key(conned_obj) {
  
 function ti_gyroscope(conned_obj) {
   conned_obj.enableGyroscope(function() {
-    conned_obj.setGyroscopePeriod(1000, function() {
+    conned_obj.setGyroscopePeriod(2000, function() {
       conned_obj.notifyGyroscope(function() {
         //console.info("ready: notifyGyroscope");
         //console.info("notify period = " + PERIOD + "ms");
         conned_obj.on('gyroscopeChange', function(x, y, z) {
-          console.log('gyro_x: ' + x, 'gyro_y: ' + y, 'gyro_z: ' + z);
+          //console.log('gyro_x: ' + x, 'gyro_y: ' + y, 'gyro_z: ' + z);
           global.gyro_x[conned_obj.id] = x.toFixed(1);
           global.gyro_y[conned_obj.id] = y.toFixed(1);
           global.gyro_z[conned_obj.id] = z.toFixed(1);
@@ -121,10 +128,11 @@ function ti_ir_temperature(conned_obj) {
             //console.log('\tambient temperature = %d °C', ambientTemperature.toFixed(1));
           global.obj_temp[conned_obj.id] = objectTemperature.toFixed(1);
           global.temp[conned_obj.id] = ambientTemperature.toFixed(1);
-//          if (ambientTemperature.toFixed(1) < -35) {
-//            console.error('ambientTemperature too low : ' + ambientTemperature.toFixed(1));
-//            restart();
-//          }
+          console.log('temperature = ', objectTemperature.toFixed(0), conned_obj.id, E );
+          if (conned_obj.id == E) {
+            //fifo(ambientTemperature.toFixed(0) + '\n');
+            fifo(objectTemperature.toFixed(0) + '\n');
+          }
         });
       });
     });
@@ -133,7 +141,7 @@ function ti_ir_temperature(conned_obj) {
  
 function ti_accelerometer(conned_obj) {
   conned_obj.enableAccelerometer(function() {
-    conned_obj.setAccelerometerPeriod(1000, function() {
+    conned_obj.setAccelerometerPeriod(2000, function() {
       conned_obj.notifyAccelerometer(function() {
         //console.info("ready: notifyAccelerometer");
         //console.info("notify period = " + PERIOD + "ms");
@@ -152,7 +160,7 @@ function ti_accelerometer(conned_obj) {
  
 function ti_humidity(conned_obj) {
   conned_obj.enableHumidity(function() {
-    conned_obj.setHumidityPeriod(PERIOD, function() {
+    conned_obj.setHumidityPeriod(/*PERIOD*/2000, function() {
       conned_obj.notifyHumidity(function() {
         //console.info("ready: notifyHumidity");
         //console.info("notify period = " + PERIOD + "ms");
@@ -174,7 +182,7 @@ function ti_humidity(conned_obj) {
  
 function ti_magnetometer(conned_obj) {
   conned_obj.enableMagnetometer(function() {
-    conned_obj.setMagnetometerPeriod(PERIOD, function() {
+    conned_obj.setMagnetometerPeriod(2000, function() {
       conned_obj.notifyMagnetometer(function() {
         //console.info("ready: notifyMagnetometer");
         //console.info("notify period = " + PERIOD + "ms");
@@ -218,8 +226,8 @@ function ti_luxometer(conned_obj) {
   });
 }
  
-//var SensorTag = require('sensortag');
-var SensorTag = require('./index');
+var SensorTag = require('sensortag');
+//var SensorTag = require('./index');
 var aggregate = require('./aggregate.js');
 var execSync = require('child_process').execSync;
 

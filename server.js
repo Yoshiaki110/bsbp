@@ -1,3 +1,32 @@
+var EL=require('echonet-lite');
+function echonet_init() {
+  var objList=['05ff01'];
+  var elsocket=EL.initialize(objList,function(rinfo,els){
+    //console.dir(rinfo);
+    //console.dir(els);
+  });
+}
+
+//var IP = '192.168.10.191';
+var IP = '192.168.10.239';
+//EL.search();
+function aircon_on() {
+  EL.sendOPC1(IP,[0x05,0xff,0x01],[0x01,0x30,0x01],EL.SETI,0x80,[0x30]);
+}
+function aircon_off() {
+  EL.sendOPC1(IP,[0x05,0xff,0x01],[0x01,0x30,0x01],EL.SETI,0x80,[0x31]);
+}
+function aircon_temp(temp) {
+  EL.sendOPC1(IP,[0x05,0xff,0x01],[0x01,0x30,0x01],EL.SETI,0xb3,[temp]);
+}
+function aircon_heater() {
+  EL.sendOPC1(IP,[0x05,0xff,0x01],[0x01,0x30,0x01],EL.SETI,0xb0,[0x43]);
+}
+function aircon_cooler() {
+  EL.sendOPC1(IP,[0x05,0xff,0x01],[0x01,0x30,0x01],EL.SETI,0xb0,[0x42]);
+}
+
+
 var fs = require("fs");
 /*
 function write(fname, data) {
@@ -84,6 +113,8 @@ app.post('/api/changerow', function(req, res) {
 
 global.alarm = '';
 global.alarmfile = '';
+global.temp_set = 0;
+global.temp_real = 0;
 const execSync = require('child_process').execSync;
 const exec = require('child_process').exec;
 //global.logging = false;
@@ -91,6 +122,7 @@ app.post('/api/start', function(req, res) {
   console.log('post start', req.body);
   global.alarm = req.body.time;
   global.alarmfile = req.body.file;
+  global.temp_set = req.body.temp;
   res.json(req.body);
 });
 app.post('/api/stop', function(req, res) {
@@ -105,9 +137,24 @@ var common = require('./common.js');
 
 global.alarming = false;
 
+
 function loop() {
   var time = common.timeStr();
-  console.log('loop', time, global.alarm);
+  console.log('loop', time, global.alarm, global.temp_real, global.temp_set);
+  aircon_temp(global.temp_real);
+  if (global.temp_real != 0 && global.temp_set != 0) {
+    if (global.temp_real > global.temp_set) {
+      console.log('cooler');
+      aircon_on();
+      aircon_cooler();
+    } else if (global.temp_real < global.temp_set) {
+      console.log('heater');
+      aircon_on();
+      aircon_heater();
+    } else {
+      aircon_off();
+    }
+  }
   if (time == global.alarm) {
     if (!global.alarming) {
       var cmd = 'mpg321 ../bsbp_app/' + global.alarmfile + ' -l0 -g 1000';
@@ -117,7 +164,7 @@ function loop() {
   } else {
     global.alarming = false;
   }
-  setTimeout(loop, 50000); 
+  setTimeout(loop, 5000); 
 }
 
 function prepare() {
@@ -126,8 +173,26 @@ function prepare() {
   } else {
     common.LineMsg('bsbp server start');
     app.listen(80);
+    echonet_init();
     loop();
   }
 }
 
 prepare();
+
+var readline = require('readline');
+
+function temp() {
+  var rs = fs.createReadStream('fifo');
+  var rl = readline.createInterface(rs, {});
+  rl.on('line', function(line) {
+    global.temp_real = parseInt(line)
+    console.log('ondo', line, global.temp_real);
+  });
+  rl.on('close', function() {
+    console.log('close');
+    temp();
+  });
+}
+temp();
+
